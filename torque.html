@@ -1,0 +1,131 @@
+<html>
+  <style>
+    #map, html, body {
+      width: 100%; height: 100%; padding: 0; margin: 0;
+    }
+
+  #torque-time {
+  	text-align: center;
+  	font-weight: bold;
+  	padding: 10px;
+  	vertical-align: middle;
+  	background-color: white;
+  	border: 1px white dashed;
+  	position: absolute;
+  	font-size: 28px;
+  	color: black;
+  	top: 20px;
+  	right: 45%;
+  }
+  </style>
+  <body>
+    <div id="map"></div>
+    <div id="torque-time"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="torque.full.js"></script>
+
+
+    <script>
+    (function() {
+      Date.prototype.addHours= function(h){
+          this.setHours(this.getHours()+h);
+          return this;
+      }
+
+      var map = new google.maps.Map(document.getElementById('map'), {
+          center: new google.maps.LatLng(-23.546779, -46.637805),
+          zoom: 10,
+          mapTypeId:google.maps.MapTypeId.SATELLITE,
+          mapTypeControl:true,
+          minZoom:1,
+          scaleControl: true,
+          streetViewControl: false,
+          overviewMapControl: false,
+      });
+      var map_style = {};
+      map_style.google_maps_customization_style = [
+          {
+              stylers:[
+                  { invert_lightness:true },
+                  { weight:1 },
+                  { saturation:-100 },
+                  { lightness:-40 }
+              ]
+          },
+          {
+              elementType:"labels",
+              stylers:[
+                  { visibility:"simplified" }
+              ]
+          }
+      ];
+      map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+      map.setOptions({styles:map_style.google_maps_customization_style});
+      var torqueLayer = new torque.GMapsTorqueLayer({
+        time_slider: true,
+        user       : 'fbbergamo',
+        table      : 'stop_times_merge_copy',
+        column     : 'cartodb_id',
+        countby    : 'count(cartodb_id)',
+        resolution: 2,
+        steps: 256,
+        blendmode  : 'multiply',
+        trails: 2,
+        animationDuration: 30,
+        map: map
+      });
+    var DEFAULT_CARTOCSS = [
+      'Map {',
+         '-torque-time-attribute: "arrival_time";',
+         '-torque-aggregation-function: "count(cartodb_id)";',
+         '-torque-frame-count: 512;',
+         '-torque-animation-duration: 30;',
+         '-torque-resolution: 2',
+         '}',
+      '#layer {',
+        'marker-width: 3; ',
+        'marker-fill: #FEE391; ',
+        'marker-fill-opacity: 0.2;',
+        '[value > 1] { marker-width: 3; }',
+        '[value > 2] { marker-width: 4; }',
+        '[value > 5] { marker-width: 6; }',
+        '[value > 10] { marker-width: 10; marker-fill: #FFF; }',
+      '[frame-offset = 1] {',
+         'marker-width: 4;',
+          'marker-fill-opacity: 0.1;',
+      '}',
+      '[frame-offset = 2] { ',
+         'marker-width: 4;',
+          'marker-fill-opacity: 0.1;',
+      '}',
+      '[frame-offset = 3] { ',
+         'marker-width: 3;',
+          'marker-fill-opacity: 0.1;',
+      '}',
+      '[frame-offset = 4] { ',
+         'marker-width: 2;',
+          'marker-fill-opacity: 0.1;',
+      '}',
+      '[frame-offset = 5] { ',
+         'marker-width: 2;',
+          'marker-fill-opacity: 0.1;',
+      '}',
+      '}'
+      ].join('\n');
+      torqueLayer.setCartoCSS(DEFAULT_CARTOCSS);
+      torqueLayer.setMap(map);
+
+
+
+      torqueLayer.play();
+
+      torqueLayer.on('change:time', function(changes) {
+          var month_year = changes.time.addHours(3).toString().substr(4).split(' ');
+          $('#torque-time').text(month_year[3]);
+          console.log(torqueLayer.getTime());
+      });
+    })();
+    </script>
+  </body>
+</html>
