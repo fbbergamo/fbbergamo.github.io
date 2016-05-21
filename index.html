@@ -72,15 +72,14 @@
         steps: 256,
         blendmode  : 'multiply',
         trails: 2,
-        animationDuration: 30,
         map: map
       });
     var DEFAULT_CARTOCSS = [
       'Map {',
          '-torque-time-attribute: "arrival_time";',
          '-torque-aggregation-function: "count(cartodb_id)";',
-         '-torque-frame-count: 512;',
-         '-torque-animation-duration: 30;',
+         '-torque-frame-count: 256;',
+         '-torque-animation-duration: 45;',
          '-torque-resolution: 2',
          '}',
       '#layer {',
