@@ -78,7 +78,7 @@
       'Map {',
          '-torque-time-attribute: "arrival_time";',
          '-torque-aggregation-function: "count(cartodb_id)";',
-         '-torque-frame-count: 256;',
+         '-torque-frame-count: 128;',
          '-torque-animation-duration: 45;',
          '-torque-resolution: 2',
          '}',
@@ -86,7 +86,7 @@
         'marker-width: 3; ',
         'marker-fill: #FEE391; ',
         'marker-fill-opacity: 0.2;',
-        '[value > 1] { marker-width: 3; }',
+        '[value > 0] { marker-width: 3; }',
         '[value > 2] { marker-width: 4; }',
         '[value > 5] { marker-width: 6; }',
         '[value > 10] { marker-width: 10; marker-fill: #FFF; }',
@@ -114,15 +114,10 @@
       ].join('\n');
       torqueLayer.setCartoCSS(DEFAULT_CARTOCSS);
       torqueLayer.setMap(map);
-
-
-
       torqueLayer.play();
-
       torqueLayer.on('change:time', function(changes) {
           var month_year = changes.time.addHours(3).toString().substr(4).split(' ');
           $('#torque-time').text(month_year[3]);
-          console.log(torqueLayer.getTime());
       });
     })();
     </script>
